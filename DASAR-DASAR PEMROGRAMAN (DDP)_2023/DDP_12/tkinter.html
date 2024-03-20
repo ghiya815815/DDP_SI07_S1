@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>XOXO Game</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #2c3e50;
+        }
+        .game {
+            display: grid;
+            grid-template-columns: repeat(3, 100px);
+            grid-template-rows: repeat(3, 100px);
+            gap: 10px;
+        }
+        .box {
+            width: 100px;
+            height: 100px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 2rem;
+            font-weight: bold;
+            color: #fff;
+            background-color: #34495e;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        .box:hover {
+            background-color: #2980b9;
+        }
+        .box.active {
+            pointer-events: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="game"></div>
+    <script>
+        const game = document.querySelector('.game');
+        const boxes = [];
+        const symbols = ['X', 'O'];
+        let turn = 0;
+
+        const createBoxes = () => {
+            for (let i = 0; i < 9; i++) {
+                const box = document.createElement('div');
+                box.classList.add('box');
+                box.setAttribute('onclick', 'play(this)');
+                box.setAttribute('id', i);
+                game.appendChild(box);
+                boxes.push(box);
+            }
+        };
+
+        const checkWin = () => {
+            const lines = [
+                [0, 1, 2],
+                [3, 4, 5],
+                [6, 7, 8],
+                [0, 3, 6],
+                [1, 4, 7],
+                [2, 5, 8],
+                [0, 4, 8],
+                [2, 4, 6]
+            ];
+
+            for (let line of lines) {
+                const [a, b, c] = line;
+                if (boxes[a].innerText && boxes[a].innerText === boxes[b].innerText && boxes[a].innerText === boxes[c].innerText) {
+                    return boxes[a].innerText;
+                }
+            }
+            return null;
+        };
+
+        const checkDraw = () => {
+            return !boxes.some(box => !box.innerText);
+        };
+
+        const play = (box) => {
+            if (!box.innerText) {
+                box.innerText = symbols[turn];
+                box.classList.add('active');
+                turn = 1 - turn;
+            }
+
+            const winner = checkWin();
+            if (winner) {
+                alert(`Player ${winner} wins!`);
+                boxes.forEach(box => box.removeAttribute('onclick'));
+                return;
+            }
+
+            if (checkDraw()) {
+                alert('It\'s a draw!');
+                boxes.forEach(box => box.removeAttribute('onclick'));
+                return;
+            }
+        };
+
+        createBoxes();
+    </script>
+</body>
+</html>
